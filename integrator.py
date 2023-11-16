@@ -69,11 +69,13 @@ def grav_force(potential, positions):
     # now I am going to round every particle position to the nearest whole number
     # in order to get the closest approximation of the force on each particle
     rounded_positions = np.rint(positions)
+    # convert these to integers to be used as indices of the potential array
+    int_positions = rounded_positions.astype(int)
 
     # create arrays of position values in each dimension
-    xpos = rounded_positions[:,0]
-    ypos = rounded_positions[:,1]
-    zpos = rounded_positions[:,2]
+    xpos = int_positions[:,0]
+    ypos = int_positions[:,1]
+    zpos = int_positions[:,2]
 
     # make an array of force values at each particle's position
     # F is array of size (num_particles, 3) with force values (Fx, Fy, Fz) for each particle at their
