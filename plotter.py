@@ -5,6 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 import matplotlib.colors as colors
+from matplotlib.widgets import Slider
 
 
 #function to plot 2d z axis slices of the density 
@@ -29,10 +30,10 @@ def plot_density(density_field,grid_size=32):
     
     def update(z):
         #can either use the slider to manually go through slices
-        #idx = int(sliderwave.val) #slider 
+        idx = int(sliderwave.val) #slider 
 
         #or automatically have it cycle through all z axis slices
-        idx = int(z)    #auto cycle
+        #idx = int(z)    #auto cycle
 
         im.set_array(density_field[:, :, idx])
         ax.set_title("Density Field Slice (z = %s)" % int(z))
@@ -42,14 +43,14 @@ def plot_density(density_field,grid_size=32):
         return [im] 
 
     # Sliders
-    # plt.subplots_adjust(bottom=0.2)
-    # axwave = plt.axes([0.25, 0.05, 0.5, 0.03])
-    #
-    # sliderwave = Slider(axwave, 'Z axis', 0, 31, valinit=0, valfmt='%d')
-    # sliderwave.on_changed(update)
+    plt.subplots_adjust(bottom=0.2)
+    axwave = plt.axes([0.25, 0.05, 0.5, 0.03])
+    
+    sliderwave = Slider(axwave, 'Z axis', 0, 31, valinit=0, valfmt='%d')
+    sliderwave.on_changed(update)
 
     #autocycle slices
-    ani = FuncAnimation(fig, update, frames=grid_size)
+    #ani = FuncAnimation(fig, update, frames=grid_size)
 
     plt.show()
     plt.close()

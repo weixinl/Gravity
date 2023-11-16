@@ -28,8 +28,7 @@ def distribute_particles(center=(16.,16.,16.), a=5., b_to_a=0.5, c_to_a=0.8, gri
     # Covariance matrix, aligned with the coordinate axes.
     #https://cs229.stanford.edu/section/gaussians.pdf
     cov = np.diag([a**2 , (b_to_a * a)**2, (c_to_a * a)**2 ])
-    print(cov.shape)
-    print(cov)
+    
     # Generate multivariate Gaussian distributed points.
     positions = np.random.multivariate_normal(mean, cov, num_particles)
 
