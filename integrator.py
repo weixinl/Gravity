@@ -1,7 +1,6 @@
 # Graduate Computational Physics
 # Gravity on a Mesh Project
 # Integrator file
-# By Hayden Orth
 
 import numpy as np
 import densities
@@ -27,18 +26,20 @@ def integrate(positions, velocities, potential, time_step):
     :return: new_potential:
                     returns array of potential values
     '''
-    # maybe make it so this function takes the density?
-
+    
     # get values of force (3 components) on each particle at the current positions
     F_current = grav_force(potential, positions)
+
     # calculate v(t + half step)
     v_half = velocities + 0.5*time_step*F_current
     # calculate x(t + step)
     new_positions = positions + time_step*v_half
+
     # calculate updated density with new positions
     new_density = densities.cic_density(new_positions)
     # update potential !!!!!!(NEEDS ACTUAL SOLVER FUNCTION)!!!!!!
     new_potential = solve_laplace(new_density)
+
     # calculate new values of force from the new potential
     new_F = grav_force(new_potential, new_positions)
     # calculate v(t + step)
@@ -75,7 +76,8 @@ def grav_force(potential, positions):
     zpos = rounded_positions[:,2]
 
     # make an array of force values at each particle's position
-    # one for each component of the force
+    # F is array of size (num_particles, 3) with force values (Fx, Fy, Fz) for each particle at their
+    # current position
     F = [[0]*3]*np.size(xpos)
     for i in range(np.size(xpos)):
         F[i][0] = dphi_dx[xpos[i]][ypos[i]][zpos[i]]
