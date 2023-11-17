@@ -16,7 +16,12 @@ def cic_density(positions, grid_size=32,cell_size =1,mass=1. ):
             mass of each particle
     :return density: np.array
             returns array of shape (grid_size,grid_size,grid_size) with density field due to all the particles
+     --------------------------------------------------------------------------------------------------------
+    Note: we only take weights for cells next to the primary cell (x_p) since weighting is 0 for cells where delta> cell_size
+          weights[0] contains weights for lower cell (cell where the particle "cloud" begins)
+          and and weights[1] contains weight for higher cell (the next cell)
     '''
+    
 
     #empty grid to store densities for each cell
     density = np.zeros((grid_size, grid_size, grid_size))
@@ -30,9 +35,6 @@ def cic_density(positions, grid_size=32,cell_size =1,mass=1. ):
         delta = np.abs(x - x_p)
 
         #weights for the lower bound of the cell and all surrounding cells
-        #we only do this for surrounding cells since weighting is 0 for cells where delta> cell_size
-        #weights[0] contains weights for lower cell (cell where the particle "cloud" begins)
-        #and and weights[1] contains weight for higher cell (the next cell)
         weights = [cell_size - delta, delta]
 
         # Add the weighted density to the lower bound and all surrounding cells
