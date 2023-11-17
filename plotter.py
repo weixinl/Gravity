@@ -3,7 +3,7 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib.animation import FuncAnimation
+from matplotlib import animation
 import matplotlib.colors as colors
 from matplotlib.widgets import Slider
 
@@ -52,9 +52,7 @@ def plot_particles(positions,grid_size=32,save_fig=False):
         plt.show()
 
     plt.close()
- 
-        #can either use the slider to manually go through slices
-        idx = int(sliderwave.val) #slider 
+
 
 #function to plot z axis slices of the density field
 def plot_density(density_field,grid_size=32,slider=False,save_slices=False,interval=4):

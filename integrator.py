@@ -63,12 +63,12 @@ def grav_force(potential, positions):
                     returns array of force on each particle in each direction (Fx, Fy, Fz)
     '''
     # take gradient of the potential
-    dphi_dz, dphi_dy, dphi_dx = np.gradient(potential)
+    dphi = np.gradient(potential)
 
     # now we have values of force at discrete position values on the grid
     # now I am going to round every particle position to the nearest whole number
     # in order to get the closest approximation of the force on each particle
-    rounded_positions = np.rint(positions)
+    rounded_positions = np.clip(np.rint(positions), 0, 31)
     # convert these to integers to be used as indices of the potential array
     int_positions = rounded_positions.astype(int)
 
@@ -82,9 +82,13 @@ def grav_force(potential, positions):
     # current position
     F = [[0]*3]*np.size(xpos)
     for i in range(np.size(xpos)):
-        F[i][0] = dphi_dx[xpos[i]][ypos[i]][zpos[i]]
-        F[i][1] = dphi_dy[xpos[i]][ypos[i]][zpos[i]]
-        F[i][2] = dphi_dz[xpos[i]][ypos[i]][zpos[i]]
+        # Fx = dphi/dx
+        F[i][0] = dphi[0][xpos[i], ypos[i], zpos[i]]
+        # Fy = dphi/dy
+        F[i][1] = dphi[1][xpos[i], ypos[i], zpos[i]]
+        # Fz = dphi/dz
+        F[i][2] = dphi[2][xpos[i], ypos[i], zpos[i]]
+        
     
     # return F as an array
     return np.array(F)
