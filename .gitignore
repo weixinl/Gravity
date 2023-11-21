@@ -1,3 +1,9 @@
 *
 !.gitignore
 !readme.md
+!solver.py
+!densities.py
+!distribute.py
+!integrator.py
+!plotter.py
+!sample_main.py
