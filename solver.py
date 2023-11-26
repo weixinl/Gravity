@@ -30,7 +30,6 @@ def solve_poisson(density):
     assuming side of a grid is 1
     '''
     density_freq = fourier(density) # density in frequency 
-    print(density_freq.shape)
     N = density.shape[0]
     potential_freq = np.zeros((N, N, N))
     for i in range(N):

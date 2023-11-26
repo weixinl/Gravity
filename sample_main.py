@@ -27,12 +27,13 @@ def main():
 
     #testing out with random values for now
     velocity = np.zeros(np.shape(particles))
-    # potential = np.zeros(np.shape(density))
-    potential = solver.solve_poisson(density)
+    potential = np.zeros(np.shape(density))
+    # potential = solver.solve_poisson(density)
     tsteps=50
 
     for i in range(tsteps):
         particles,velocity,potential = integrate(particles,velocity,potential,0.1)
+        density = cic_density(particles,grid_size=grid_size)
         particles = particles%32
         moves = append_new_array(moves,particles)
 
