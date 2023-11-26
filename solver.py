@@ -1,4 +1,5 @@
 import numpy as np
+epsilon = 1e-7 #for numerical stability
 
 def mydft(X):
     '''
@@ -13,7 +14,7 @@ def myinvdft():
     return
 
 def fourier(xmat):
-    return np.fft.rfftn(xmat)
+    return np.fft.fftn(xmat)
 
 def inv_fourier(fmat):
     '''
@@ -25,17 +26,19 @@ def inv_fourier(fmat):
 def solve_poisson(density):
     '''
     solve poisson equation 
-    return field
+    return potential
     assuming side of a grid is 1
     '''
     density_freq = fourier(density) # density in frequency 
+    print(density_freq.shape)
     N = density.shape[0]
-    field_freq = np.zeros((N, N, N))
+    potential_freq = np.zeros((N, N, N))
     for i in range(N):
         for j in range(N):
             for k in range(N):
-                field_freq[i, j, k] = - density_freq[i, j, k] / (np.pi * (pow(i + 1, 2) + pow(j + 1, 2) + pow(k + 1, 2)))
-    return inv_fourier(field_freq)
+                potential_freq[i, j, k] = density_freq[i, j, k] * 2 * np.pi/ (np.cos(2 * np.pi * i / N) + np.cos(2 * np.pi * j / N) \
+                                                                          + np.cos( 2 * np.pi * k / N) - 3 + epsilon)
+    return inv_fourier(potential_freq)
 
 if __name__ == "__main__":
     # test

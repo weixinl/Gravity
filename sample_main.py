@@ -2,6 +2,7 @@
 from densities import *
 from distribute import *
 from plotter import *
+import solver
 from integrator import *
 
 def main():
@@ -16,8 +17,8 @@ def main():
     particles = distribute_particles(center, a, b_to_a, c_to_a,grid_size=grid_size,num_particles=num_particles)
 
     density = cic_density(particles,grid_size=grid_size)
-    plot_particles(particles)
-    plot_density(density,grid_size)
+    # plot_particles(particles)
+    # plot_density(density,grid_size)
 
     #array to store all positions at each timestep
     moves = np.array(particles)
@@ -26,7 +27,8 @@ def main():
 
     #testing out with random values for now
     velocity = np.zeros(np.shape(particles))
-    potential = np.zeros(np.shape(density))
+    # potential = np.zeros(np.shape(density))
+    potential = solver.solve_poisson(density)
     tsteps=50
 
     for i in range(tsteps):
