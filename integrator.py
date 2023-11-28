@@ -83,12 +83,13 @@ def grav_force(potential, positions):
     # current position
     F = [[0]*3]*np.size(xpos)
     
-    # Fx = dphi/dx
-    F[0] = dphi[2][xpos, ypos, zpos]
-    # Fy = dphi/dy
-    F[1] = dphi[1][xpos, ypos, zpos]
-    # Fz = dphi/dz
-    F[2] = dphi[0][xpos, ypos, zpos]
+    for i in range(np.size(xpos)):
+        # Fx = dphi/dx
+        F[i][0] = dphi[2][xpos[i], ypos[i], zpos[i]]
+        # Fy = dphi/dy
+        F[i][1] = dphi[1][xpos[i], ypos[i], zpos[i]]
+        # Fz = dphi/dz
+        F[i][2] = dphi[0][xpos[i], ypos[i], zpos[i]]
     
     # return F as an array
     return np.array(F)
