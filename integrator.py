@@ -4,6 +4,7 @@
 
 import numpy as np
 import densities
+import solver
 
 # function to run one time step of the integrator
 def integrate(positions, velocities, potential, time_step):
@@ -37,8 +38,8 @@ def integrate(positions, velocities, potential, time_step):
 
     # calculate updated density with new positions
     new_density = densities.cic_density(new_positions)
-    # update potential !!!!!!(NEEDS ACTUAL SOLVER FUNCTION)!!!!!!
-    new_potential = solve_laplace(new_density)
+    # update potential
+    new_potential = solver.solve_poisson(new_density)
 
     # calculate new values of force from the new potential
     new_F = grav_force(new_potential, new_positions)
@@ -94,7 +95,7 @@ def grav_force(potential, positions):
     return np.array(F)
 
 # placeholder for laplace equation solver (will come from different source file)
-def solve_laplace(density):
-    potential = density
-    return potential
+#def solve_laplace(density):
+#    potential = density
+#    return potential
 
