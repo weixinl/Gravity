@@ -27,29 +27,32 @@ def cic_density(positions, grid_size=32,cell_size =1,mass=1. ):
     density = np.zeros((grid_size, grid_size, grid_size))
 
     #populating density grid according to CIC interpolation
-    for x in positions:
-        #indices of the lower bound of the cell containing the particle (x_p,y_p,z_p)
-        x_p = np.int_(np.floor(x))
+    for x_p in positions:
+        #indices of the cell containing the particle (x_p,y_p,z_p)
+        indices = np.int32(np.floor(x_p)) % grid_size
 
-        #distance of the particle from the lower corner (|x-x_p|,|y-y_p|.|z-z_p|)
-        delta = np.abs(x - x_p)
+        i,j,k = indices[0],indices[1],indices[2]
 
-        #weights for the lower bound of the cell and all surrounding cells
-        weights = [cell_size - delta, delta]
+        #indices of the next cell in each direction (i+1,j+1,k+1) with boundary conditions enforced
+        ii, jj, kk = (i + 1) % grid_size, (j + 1) % grid_size, (k + 1) % grid_size
 
-        # Add the weighted density to the lower bound and all surrounding cells
-        for i in range(2):
-            for j in range(2):
-                for k in range(2):
-                    ii, jj, kk = (x_p[0] + i), (x_p[1] + j), (
-                                x_p[2] + k)
-                    #if any index goes out of bound, squishes the cloud to fit to the last cell
-                    if ii>31:
-                        ii=31
-                    if jj>31:
-                        jj=31
-                    if kk>31:
-                        kk=31
+        #centers of the cells containing the particle (x_c,y_c,z_c)
+        x_c = np.array([i+0.5,j+0.5,k+0.5])
 
-                    density[ii, jj, kk] += mass * weights[i][0] * weights[j][1] * weights[k][2]
+        #distance of the particle from the cell center (|x_p-x_c|,|y_p-y_c|.|z_p-z_c|)
+        d = np.abs(x_p - x_c)
+
+        t = np.abs(cell_size - d)
+
+
+        #implemntation of CIC interpolation from "Writing a PM code" by Andrey Kravtsov
+        density[i,j,k] += mass * (t[0] * t[1] * t[2])
+        density[ii,j,k] += mass * (d[0] * t[1] * t[2])
+        density[i,jj,k] += mass * (t[0] * d[1] * t[2])
+        density[i,j,kk] += mass * (t[0] * t[1] * d[2])
+        density[ii,jj,k] += mass * (d[0] * d[1] * t[2])
+        density[ii,j,kk] += mass * (d[0] * t[1] * d[2])
+        density[i,jj,kk] += mass * (t[0] * d[1] * d[2])
+        density[ii,jj,kk] += mass * (d[0] * d[1] * d[2])
+
     return density
