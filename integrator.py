@@ -82,14 +82,13 @@ def grav_force(potential, positions):
     # F is array of size (num_particles, 3) with force values (Fx, Fy, Fz) for each particle at their
     # current position
     F = [[0]*3]*np.size(xpos)
-    for i in range(np.size(xpos)):
-        # Fx = dphi/dx
-        F[i][0] = dphi[0][xpos[i], ypos[i], zpos[i]]
-        # Fy = dphi/dy
-        F[i][1] = dphi[1][xpos[i], ypos[i], zpos[i]]
-        # Fz = dphi/dz
-        F[i][2] = dphi[2][xpos[i], ypos[i], zpos[i]]
-        
+    
+    # Fx = dphi/dx
+    F[0] = dphi[2][xpos, ypos, zpos]
+    # Fy = dphi/dy
+    F[1] = dphi[1][xpos, ypos, zpos]
+    # Fz = dphi/dz
+    F[2] = dphi[0][xpos, ypos, zpos]
     
     # return F as an array
     return np.array(F)
@@ -98,4 +97,15 @@ def grav_force(potential, positions):
 #def solve_laplace(density):
 #    potential = density
 #    return potential
+
+# old stuff from grav_force
+'''
+for i in range(np.size(xpos)):
+        # Fx = dphi/dx
+        F[i][0] = dphi[0][xpos[i], ypos[i], zpos[i]]
+        # Fy = dphi/dy
+        F[i][1] = dphi[1][xpos[i], ypos[i], zpos[i]]
+        # Fz = dphi/dz
+        F[i][2] = dphi[2][xpos[i], ypos[i], zpos[i]]
+'''
 
