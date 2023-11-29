@@ -9,11 +9,11 @@ from matplotlib.widgets import Slider
 
 #function to plot particles with given positions
 #used for plotting initial distribution or a positions during a timestep
-def plot_particles(positions,grid_size=32,save_fig=False):
+def plot_particles(positions,grid_size=32,save_fig=False,particle_size=0.1):
     # plotting particles
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
-    ax.scatter3D(positions[..., 0], positions[..., 1], positions[..., 2], s=0.01)
+    ax.scatter3D(positions[..., 0], positions[..., 1], positions[..., 2], s=particle_size)
 
     #setting axes ranges
     ax.set_xlim3d(0, grid_size)
@@ -99,7 +99,7 @@ def plot_density(density_field,grid_size=32,slider=False,save_slices=False,inter
 
 #function to plot motion of particles
 #uses a list of particle positions across all timesteps generated using the append_new_array function below
-def plot_particle_motion(particle_positions, num_steps, interval,save_gif=False):
+def plot_particle_motion(particle_positions, num_steps, interval,save_gif=False,particle_size=0.1):
     """
     Plots and shows the motion of particles over time.
 
@@ -132,7 +132,7 @@ def plot_particle_motion(particle_positions, num_steps, interval,save_gif=False)
         ax.set_xlim3d(0, 32)
         ax.set_ylim3d(0, 32)
         ax.set_zlim3d(0, 32)
-        ax.scatter3D(data[..., 0], data[..., 1], data[..., 2], s=0.1)
+        ax.scatter3D(data[..., 0], data[..., 1], data[..., 2], s=particle_size)
         ax.set_title("Particle Motion at t = {}".format(num))
         return ax
 
@@ -148,6 +148,21 @@ def plot_particle_motion(particle_positions, num_steps, interval,save_gif=False)
     else:
         plt.show()
 
+
+def plot_motion_from_csv(name,num_particles,particle_size=0.1):
+    # Read the saved positions
+    loaded_moves = np.loadtxt(name)
+
+    # Calculate the correct number of timesteps
+    num_dimensions = 3  # x, y, z coordinates
+    total_elements = loaded_moves.size
+    num_timesteps = total_elements // (num_particles * num_dimensions)
+
+    # Reshape back to original shape
+    loaded_moves = loaded_moves.reshape((num_timesteps, num_particles, num_dimensions))
+
+
+    plot_particle_motion(loaded_moves, num_timesteps, interval = 3.2,save_gif=False,particle_size=particle_size)
 
 
 # function to append a new (num_particles, 3) array to the existing 3D array
