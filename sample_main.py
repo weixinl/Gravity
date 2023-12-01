@@ -7,14 +7,19 @@ from integrator import *
 
 def main():
     # Generate particles and density field
-    grid_size=32
-    num_particles= 32**3
+    grid_size = 32
+    num_particles = 2
     center = (grid_size/2, grid_size/2,grid_size/2)
     a = 5
     b_to_a = 0.5
     c_to_a = 0.8
 
     particles = distribute_particles(center, a, b_to_a, c_to_a,grid_size=grid_size,num_particles=num_particles)
+    particles = np.zeros(np.shape(particles))
+    particles[0] = [14,14,16]
+    particles[1] = [18,18,16]
+    # particles[2] = [16,16,15]
+    # particles[3] = [16,15,15]
 
     density = cic_density(particles,grid_size=grid_size)
     # plot_particles(particles)
@@ -27,21 +32,18 @@ def main():
 
     #testing out with random values for now
     velocity = np.zeros(np.shape(particles))
-    potential = np.zeros(np.shape(density))
-    # potential = solver.solve_poisson(density)
-    tsteps=50
+
+    tsteps = 100
 
     for i in range(tsteps):
-        particles,velocity,potential = integrate(particles,velocity,potential,0.1)
+        particles,velocity= integrate(particles,velocity,density,1)
         density = cic_density(particles,grid_size=grid_size)
+        # enforcing toroidal boundary conditions
         particles = particles%32
         moves = append_new_array(moves,particles)
 
-
-    plot_particle_motion(moves, tsteps, interval = 3.2,save_gif=False)
-    
-
-
+    # np.savetxt('particles.txt', moves.reshape(-1, moves.shape[-1]))
+    plot_particle_motion(moves, tsteps, interval = 3.2,save_gif=False,particle_size=5)
 
 
 
