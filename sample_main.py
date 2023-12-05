@@ -10,7 +10,7 @@ from integrator import *
 def main():
     # Generate particles and density field
     grid_size = 32
-    num_particles = 20
+    num_particles = 101
     center = (grid_size/2, grid_size/2,grid_size/2)
     a = 5
     b_to_a = 0.5
@@ -18,11 +18,14 @@ def main():
 
     #particles = distribute_spherical(radius=10,num_particles=num_particles)
     particles = distribute_particles(center, a, b_to_a, c_to_a,grid_size=grid_size,num_particles=num_particles)
-    # particles = np.zeros(np.shape(particles))
+    particles = np.zeros(np.shape(particles))
     # particles[0] = [14,16,16]
     # particles[1] = [18,16,16]
     # particles[2] = [16,16,20]
     # particles[3] = [16,15,15]
+    for i in range(100):
+        particles[i] = [16,15,15]
+    particles[100] = [14,16,16]
 
     density = cic_density(particles,grid_size=grid_size)
     #plot_particles(particles)
@@ -36,7 +39,7 @@ def main():
     #testing out with zeroes first
     velocity = np.zeros(np.shape(particles))
 
-    tsteps = 500
+    tsteps = 100
 
     for i in range(tsteps):
         particles,velocity= integrate(particles,velocity,density,time_step=0.1)
