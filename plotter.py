@@ -99,7 +99,7 @@ def plot_density(density_field,grid_size=32,slider=False,save_slices=False,inter
 
 #function to plot motion of particles
 #uses a list of particle positions across all timesteps generated using the append_new_array function below
-def plot_particle_motion(particle_positions, num_steps, interval,save_gif=False,particle_size=0.1):
+def plot_particle_motion(particle_positions, num_steps, interval,save_gif=False,name="particles.gif",particle_size=0.1):
     """
     Plots and shows the motion of particles over time.
 
@@ -144,12 +144,12 @@ def plot_particle_motion(particle_positions, num_steps, interval,save_gif=False,
         writer = animation.PillowWriter(fps=15,
                                         metadata=dict(artist='Me'),
                                         bitrate=1800)
-        ani.save('scatter.gif', writer=writer)
+        ani.save(name, writer=writer)
     else:
         plt.show()
 
 
-def plot_motion_from_csv(name,num_particles,particle_size=0.1):
+def plot_motion_from_save(name,num_particles,save_gif=False,fname="particles.gif",particle_size=0.1):
     # Read the saved positions
     loaded_moves = np.loadtxt(name)
 
@@ -162,7 +162,7 @@ def plot_motion_from_csv(name,num_particles,particle_size=0.1):
     loaded_moves = loaded_moves.reshape((num_timesteps, num_particles, num_dimensions))
 
 
-    plot_particle_motion(loaded_moves, num_timesteps, interval = 3.2,save_gif=False,particle_size=particle_size)
+    plot_particle_motion(loaded_moves, num_timesteps, interval = 3.2,save_gif=save_gif,name=fname,particle_size=particle_size)
 
 
 # function to append a new (num_particles, 3) array to the existing 3D array
