@@ -1,18 +1,6 @@
 import numpy as np
 epsilon = 1e-7 #for numerical stability
 
-def mydft(X):
-    '''
-    3d fourier transform
-    '''
-    return
-
-def myinvdft():
-    '''
-    3d inverse fourier transform
-    '''
-    return
-
 def fourier(xmat):
     return np.fft.fftn(xmat)
 
