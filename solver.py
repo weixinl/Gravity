@@ -21,7 +21,7 @@ def inv_fourier(fmat):
     input: frequency 
     output: time
     '''
-    return np.fft.irfftn(fmat)
+    return np.real(np.fft.ifftn(fmat))
 
 def solve_poisson(density):
     '''
@@ -31,7 +31,7 @@ def solve_poisson(density):
     '''
     density_freq = fourier(density) # density in frequency 
     N = density.shape[0]
-    potential_freq = np.zeros((N, N, N))
+    potential_freq = np.zeros((N, N, N),dtype=np.cfloat)
     for i in range(N):
         for j in range(N):
             for k in range(N):
