@@ -3,8 +3,7 @@
 
 import numpy as np
 
-
-def distribute_particles(center=(16.,16.,16.), a=5., b_to_a=0.5, c_to_a=0.8, grid_size =32, num_particles=32 ** 3):
+def distribute_gaussian(center=(16.,16.,16.), a=5., b_to_a=0.5, c_to_a=0.8, grid_size =32, num_particles=32 ** 3):
     '''
     Distribute particles according to a multivariate Gaussian.
     :param center: tuple
@@ -32,8 +31,30 @@ def distribute_particles(center=(16.,16.,16.), a=5., b_to_a=0.5, c_to_a=0.8, gri
     # Generate multivariate Gaussian distributed points.
     positions = np.random.multivariate_normal(mean, cov, num_particles)
 
-    # Clip the particles to ensure they are within the grid boundaries
-    positions = np.clip(positions, 0, grid_size)
+    # enforcing toroidal boundary conditions
+    positions = positions%32
 
     return positions
 
+def distribute_spherical(center=(16,16,16),radius=10,grid_size =32, num_particles=32 ** 3):
+    #r values
+    u = np.random.uniform(0.0, 1, (num_particles))
+    R = radius * (u)**(1/3)
+
+    #phi values
+    phi = np.random.uniform(0.0,2*np.pi,(num_particles))
+
+    #theta values
+    costheta = np.random.uniform(-1,1,(num_particles))
+    theta = np.arccos(costheta)
+
+    x = R * np.sin(theta) * np.cos(phi) + (center[0])
+    y = R * np.sin(theta) * np.sin(phi) + (center[1])
+    z = R * np.cos(theta) + (center[2])
+
+    positions = np.stack((x,y,z),axis=1)
+
+    # enforcing toroidal boundary conditions
+    positions = positions % 32
+
+    return positions
