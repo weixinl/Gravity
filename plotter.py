@@ -42,9 +42,9 @@ def plot_particles(positions,grid_size=32,save_fig=False,particle_size=0.1):
     ax.tick_params(axis='y', pad=-5)
     ax.tick_params(axis='z', pad=-4)
 
-    ax.scatter3D(positions[..., 0], positions[..., 1], 0 , c='grey', s=0.01)
-    ax.scatter3D(0, positions[..., 1], positions[..., 2], c='grey', s=0.01)
-    ax.scatter3D(positions[..., 0], grid_size , positions[..., 2], c='grey', s=0.01)
+    ax.scatter3D(positions[..., 0], positions[..., 1], 0 , c='grey', s=particle_size)
+    ax.scatter3D(0, positions[..., 1], positions[..., 2], c='grey', s=particle_size)
+    ax.scatter3D(positions[..., 0], grid_size , positions[..., 2], c='grey', s=particle_size)
 
     if save_fig:
         plt.savefig("initial_distribution.png", dpi=1200, bbox_inches="tight")
@@ -147,22 +147,6 @@ def plot_particle_motion(particle_positions, num_steps, interval,save_gif=False,
         ani.save(name, writer=writer)
     else:
         plt.show()
-
-
-def plot_motion_from_save(name,num_particles,save_gif=False,fname="particles.gif",particle_size=0.1):
-    # Read the saved positions
-    loaded_moves = np.loadtxt(name)
-
-    # Calculate the correct number of timesteps
-    num_dimensions = 3  # x, y, z coordinates
-    total_elements = loaded_moves.size
-    num_timesteps = total_elements // (num_particles * num_dimensions)
-
-    # Reshape back to original shape
-    loaded_moves = loaded_moves.reshape((num_timesteps, num_particles, num_dimensions))
-
-
-    plot_particle_motion(loaded_moves, num_timesteps, interval = 3.2,save_gif=save_gif,name=fname,particle_size=particle_size)
 
 
 # function to append a new (num_particles, 3) array to the existing 3D array

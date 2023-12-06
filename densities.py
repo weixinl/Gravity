@@ -37,11 +37,13 @@ def cic_density(positions, grid_size=32,cell_size =1,mass=1. ):
         ii, jj, kk = (i + 1) % grid_size, (j + 1) % grid_size, (k + 1) % grid_size
 
         #centers of the cells containing the particle (x_c,y_c,z_c)
-        x_c = np.array([i+0.5,j+0.5,k+0.5])
+        x_c = np.array([i+(cell_size/2),j+(cell_size/2),k+(cell_size/2)])
 
         #distance of the particle from the cell center (|x_p-x_c|,|y_p-y_c|.|z_p-z_c|)
+        # effectively gives us the fraction of the particle in neighboring cells
         d = np.abs(x_p - x_c)
 
+        # fraction of particle in the parent cells
         t = np.abs(cell_size - d)
 
 

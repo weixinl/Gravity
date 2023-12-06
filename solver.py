@@ -23,8 +23,7 @@ def solve_poisson(density):
     for i in range(N):
         for j in range(N):
             for k in range(N):
-                potential_freq[i, j, k] = density_freq[i, j, k] * 2 * np.pi/ (np.cos(2 * np.pi * i / N) + np.cos(2 * np.pi * j / N) \
-                                                                          + np.cos( 2 * np.pi * k / N) - 3 + epsilon)
+                potential_freq[i, j, k] = density_freq[i, j, k] * 2 * np.pi/ (np.cos(2 * np.pi * i / N) + np.cos(2 * np.pi * j / N) + np.cos( 2 * np.pi * k / N) - 3 + epsilon)
     return inv_fourier(potential_freq)
 
 if __name__ == "__main__":
