@@ -6,6 +6,7 @@ from densities import *
 from distribute import *
 from plotter import *
 from integrator import *
+import dynamicsteps
 
 def main():
     # Generate particles and density field
