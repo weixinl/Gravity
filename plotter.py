@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 from matplotlib import animation
 import matplotlib.colors as colors
 from matplotlib.widgets import Slider
+from densities import *
 
 #function to plot particles with given positions
 #used for plotting initial distribution or a positions during a timestep
@@ -42,9 +43,9 @@ def plot_particles(positions,grid_size=32,save_fig=False,particle_size=0.1):
     ax.tick_params(axis='y', pad=-5)
     ax.tick_params(axis='z', pad=-4)
 
-    ax.scatter3D(positions[..., 0], positions[..., 1], 0 , c='grey', s=particle_size)
-    ax.scatter3D(0, positions[..., 1], positions[..., 2], c='grey', s=particle_size)
-    ax.scatter3D(positions[..., 0], grid_size , positions[..., 2], c='grey', s=particle_size)
+    ax.scatter3D(positions[..., 0], positions[..., 1], 0 , c='grey', s=0.01)
+    ax.scatter3D(0, positions[..., 1], positions[..., 2], c='grey', s=0.01)
+    ax.scatter3D(positions[..., 0], grid_size , positions[..., 2], c='grey', s=0.01)
 
     if save_fig:
         plt.savefig("initial_distribution.png", dpi=1200, bbox_inches="tight")
@@ -149,8 +150,84 @@ def plot_particle_motion(particle_positions, num_steps, interval,save_gif=False,
         plt.show()
 
 
+def plot_motion_from_save(name,num_particles,save_gif=False,fname="particles.gif",particle_size=0.1):
+    # Read the saved positions
+    loaded_moves = np.loadtxt(name)
+
+    # Calculate the correct number of timesteps
+    num_dimensions = 3  # x, y, z coordinates
+    total_elements = loaded_moves.size
+    num_timesteps = total_elements // (num_particles * num_dimensions)
+
+    # Reshape back to original shape
+    loaded_moves = loaded_moves.reshape((num_timesteps, num_particles, num_dimensions))
+
+
+    plot_particle_motion(loaded_moves, num_timesteps, interval = 3.2,save_gif=save_gif,name=fname,particle_size=particle_size)
+
+
 # function to append a new (num_particles, 3) array to the existing 3D array
 def append_new_array(existing_array, new_array):
     # reshape new array to (1, num_particles, 3)
     new_array_reshaped = new_array[np.newaxis, ...]
     return np.concatenate((existing_array, new_array_reshaped), axis=0)
+
+# function for plotting a single slice of a density field, i.e., a 2D slice of field at a position along an axis
+def plot_density_slice(density_field, time, axis='z', slice_position=16, grid_size=32, save_plot=False):
+    # initialize plot
+    fig, ax = plt.subplots()
+
+    # create plot based on indicated axis and position
+    if axis == 'z':
+        im = ax.imshow(density_field[:, :, slice_position], cmap='viridis',norm=colors.LogNorm(vmin=0.001,vmax=np.max(density_field)))
+        ax.invert_yaxis()
+
+        #colorbar/density in log scale to better visualize the spread of data
+        fig.colorbar(im,ax=ax,label='log(Density)')
+        ax.set_title("Density Field Slice (Z = " + str(slice_position) + ") at t = " + str(time))
+        #setting axes ranges
+        ax.set_xlim(0, grid_size)
+        ax.set_ylim(0, grid_size)
+        #setting axes labels
+        ax.set_xlabel("X axis")
+        ax.set_ylabel("Y axis")
+    elif axis == 'y':
+        im = ax.imshow(density_field[:, slice_position, :], cmap='viridis',norm=colors.LogNorm(vmin=0.001,vmax=np.max(density_field)))
+        ax.invert_yaxis()
+
+        #colorbar/density in log scale to better visualize the spread of data
+        fig.colorbar(im,ax=ax,label='log(Density)')
+        ax.set_title("Density Field Slice (Y = " + str(slice_position) + ") at t = " + str(time))
+        #setting axes ranges
+        ax.set_xlim(0, grid_size)
+        ax.set_ylim(0, grid_size)
+        #setting axes labels
+        ax.set_xlabel("X axis")
+        ax.set_ylabel("Z axis")
+    else:
+        im = ax.imshow(density_field[slice_position, :, :], cmap='viridis',norm=colors.LogNorm(vmin=0.001,vmax=np.max(density_field)))
+        ax.invert_yaxis()
+
+        #colorbar/density in log scale to better visualize the spread of data
+        fig.colorbar(im,ax=ax,label='log(Density)')
+        ax.set_title("Density Field Slice (X = " + str(slice_position) + ") at t = " + str(time))
+        #setting axes ranges
+        ax.set_xlim(0, grid_size)
+        ax.set_ylim(0, grid_size)
+        #setting axes labels
+        ax.set_xlabel("Y axis")
+        ax.set_ylabel("Z axis")
+    
+    # save or show
+    if save_plot:
+        plt.savefig('density_slice_' + axis + '_equals_' + str(slice_position))
+    else:
+        plt.show()
+
+# function to plot the density field at various times
+# takes array of positions at times, array of desired times to plot at, desired axis, desired slice positon
+# boolean indicated whether to save plots
+def plot_density_at_times(positions_at_times, time_steps, axis='z', slice_position=16, save=False):
+    for t in time_steps:
+        density = density = cic_density(positions_at_times[t],grid_size=32)
+        plot_density_slice(density, time=t, axis=axis, slice_position=slice_position, save_plot=save)
