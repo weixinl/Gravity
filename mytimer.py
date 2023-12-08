@@ -8,7 +8,7 @@ def decreasing_step(t):
     t: current time
     return: current dynamic time step
     '''
-    step_coeff = 0.1
+    step_coeff = 0.1 # CHANGE THIS TO ADJUST THE COEFFICIENT OF STEP SIZE
     return step_coeff / (1 + np.exp(t))
 
 def step_by_dist(particles):
@@ -18,6 +18,7 @@ def step_by_dist(particles):
     particles: N * 3 array
     return: current dynamic time step
     '''
+    step_coeff = 1e-2 # CHANGE THIS TO ADJUST THE COEFFICIENT OF STEP SIZE
     N = particles.shape[0]
     dist = 0
     for i in range(N - 1):
@@ -25,7 +26,6 @@ def step_by_dist(particles):
             diff = particles[i] - particles[j]
             dist += np.sqrt(np.sum(diff * diff))
     dist_avg = 2 * dist/(N * (N - 1))
-    step_coeff = 1e-2 
     return step_coeff * dist_avg    
 
 def const_step():
@@ -47,7 +47,7 @@ class Timer:
     '''
     ACCESS TO METHODS ONLY
     NEVER ACCESS TO VARIABLES
-    
+
     manages current time, dynamic time steps and time log
     '''
     

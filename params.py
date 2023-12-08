@@ -1,2 +1,2 @@
 
-DYNAMIC_STEP_METHOD = "const" # const, decreasing or distance
+DYNAMIC_STEP_METHOD = "distance" # const, decreasing or distance
