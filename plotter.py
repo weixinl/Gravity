@@ -229,5 +229,65 @@ def plot_density_slice(density_field, time, axis='z', slice_position=16, grid_si
 # boolean indicated whether to save plots
 def plot_density_at_times(positions_at_times, time_steps, axis='z', slice_position=16, save=False):
     for t in time_steps:
-        density = density = cic_density(positions_at_times[t],grid_size=32)
+        density = cic_density(positions_at_times[t],grid_size=32)
         plot_density_slice(density, time=t, axis=axis, slice_position=slice_position, save_plot=save)
+
+# function for plotting potential vs. kinetic energy
+# takes arrays of particle positions, particle velocities, and gravitational potentials at each time step
+# takes time index to start the plot at in case you want to only plot later times
+def virial_plots(positions_at_times, velocities_at_times, potentials_at_times, start_time=0,save=False):
+    # calculate density at each time step
+    densities = []
+    for pos in positions_at_times:
+        densities.append(cic_density(pos,grid_size=32))
+    densities = np.array(densities)
+
+    # calculate potential energy at each position at each time step (particle mass = 1)
+    U_positions = densities * potentials_at_times
+    # array of total potential energy at each time step
+    U = []
+    for u in U_positions:
+        U.append(np.sum(u))
+    U = np.array(U)
+
+    # calculate kinetic energy at each time step (m=1)
+    # convert velocities to speeds
+    speeds_at_times = velocity_to_speed(velocities_at_times)
+    # array of kinetic energies for each particle at each time
+    K_particles = 0.5 * speeds_at_times**2
+    # array of total kinetic energy at each time step
+    K = []
+    for K_time in K_particles:
+        K.append(np.sum(K_time))
+    K = np.array(K)
+    
+    fit, fit_coeffs = fit_data(K[start_time:], U[start_time:], 1)
+
+    plt.plot(K[start_time:], U[start_time:], '.', label='Data')
+    plt.plot(K[start_time:], fit, 'k-', label='U = ' + str(fit_coeffs[0]) + 'K + ' + str(fit_coeffs[1]))
+    plt.title('Total Potential Energy vs Total Kinetic Energy')
+    plt.xlabel('Kinetic Energy')
+    plt.ylabel('Potential Energy')
+    plt.legend()
+    if save==True:
+        plt.savefig('gravity_virial_test.png')
+    else:
+        plt.show()
+
+# function to take magnitude of velocity for each particle
+# returns array of speeds for each particle at each time
+def velocity_to_speed(velocities_at_times):
+    speeds = []
+    for vel in velocities_at_times:
+        speeds.append(np.sqrt(np.sum(vel**2)))
+    return np.array(speeds)
+
+# function for creating linear fits
+# create fit line
+def fit_data(x, y, degree):
+    fit_coeffs = np.polyfit(x, y, deg=degree)
+    return fit_coeffs[0]*x + fit_coeffs[1], fit_coeffs
+
+    
+
+
