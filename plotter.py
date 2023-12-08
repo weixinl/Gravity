@@ -7,6 +7,7 @@ from matplotlib import animation
 import matplotlib.colors as colors
 from matplotlib.widgets import Slider
 from densities import *
+import mytimer
 
 #function to plot particles with given positions
 #used for plotting initial distribution or a positions during a timestep
@@ -100,7 +101,7 @@ def plot_density(density_field,grid_size=32,slider=False,save_slices=False,inter
 
 #function to plot motion of particles
 #uses a list of particle positions across all timesteps generated using the append_new_array function below
-def plot_particle_motion(particle_positions, num_steps, interval,save_gif=False,name="particles.gif",particle_size=0.1):
+def plot_particle_motion(particle_positions, timer:mytimer.Timer, interval,save_gif=False,name="particles.gif",particle_size=0.1):
     """
     Plots and shows the motion of particles over time.
 
@@ -109,8 +110,9 @@ def plot_particle_motion(particle_positions, num_steps, interval,save_gif=False,
                 It is a (total_time_steps,num_particles,3) list
                 Can be constructed using the append_new_array function
                 
-    :param num_steps:
-                Total number of timesteps in the simulation.
+    :param timer: mytimer.Timer
+                object timer manages current time, dynamic time steps and time log
+
     :param interval:
                 Interval (in milliseconds) between frames in the animation.
 
@@ -137,7 +139,7 @@ def plot_particle_motion(particle_positions, num_steps, interval,save_gif=False,
         ax.set_title("Particle Motion at t = {}".format(num))
         return ax
 
-    ani = animation.FuncAnimation(fig, update_graph, num_steps,
+    ani = animation.FuncAnimation(fig, update_graph, timer.get_step_num(),
                                              interval=interval, blit=False)
 
     if save_gif:
