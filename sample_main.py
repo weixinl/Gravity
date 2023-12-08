@@ -7,7 +7,7 @@ from distribute import *
 from plotter import *
 from integrator import *
 import mytimer
-
+from velocities import *
 
 def load_txt(name,num_particles=32**3):
     # Read the saved positions
@@ -26,7 +26,7 @@ def load_txt(name,num_particles=32**3):
 def main():
     # Generate particles and density field
     grid_size = 32
-    num_particles = 10
+    num_particles = 32**2
 
     ####---------load file---------------########
     fname = 'test.txt'
@@ -64,6 +64,9 @@ def main():
     #testing out with zeroes first
     velocity = np.zeros(np.shape(particles))
 
+    #assign angular momentum about z axis, need to specify center and radius of distribution
+    velocity = angular_momentum(particles,velocity,center,radius=10)
+
     num_steps = 50
 
     # object timer manage current time, dynamic time steps and time log
@@ -77,7 +80,7 @@ def main():
         particles = particles%32
         moves = append_new_array(moves,particles)
 
-    plot_particle_motion(moves, timer = timer, interval = 3.2,save_gif=True,name="32_3particles_50s.gif",particle_size=10)
+    plot_particle_motion(moves, timer = timer, interval = 3.2,save_gif=False,name="32_3particles_50s.gif",particle_size=10)
     #plot_motion_from_save("test.txt",num_particles)
 
     #============================save file ========================================#
@@ -86,8 +89,9 @@ def main():
 
     # reshaping the array from 3D to 2D to save as txt file
     # automatically converts to appropriate shape when reading it back in later
-    moves_reshaped = moves.reshape(moves.shape[0], -1)
-    np.savetxt(fname, moves_reshaped)
+
+    #moves_reshaped = moves.reshape(moves.shape[0], -1)
+    #np.savetxt(fname, moves_reshaped)
 
 
 if __name__ == '__main__':

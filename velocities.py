@@ -3,7 +3,7 @@
 
 import numpy as np
 
-def angular_momentum(particles,velocity,center=(16,16,16),fraction=1,mass=1):
+def angular_momentum(particles,velocity,center=(16,16,16),radius=10,fraction=1,mass=1):
     average_momentum = mass * np.average(velocity)
 
     #-------25 seems to work for 32**2 particles, have to check for other numbers-----#
