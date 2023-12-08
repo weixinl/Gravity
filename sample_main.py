@@ -6,7 +6,7 @@ from densities import *
 from distribute import *
 from plotter import *
 from integrator import *
-import dynamicsteps
+import mytimer
 
 
 def load_txt(name,num_particles=32**3):
@@ -30,7 +30,7 @@ def main():
 
     ####---------load file---------------########
     fname = 'test.txt'
-    moves, current_tstep = load_txt(fname, num_particles)
+    # moves, current_tstep = load_txt(fname, num_particles)
     ####------------------------------------########
 
     # if loaded file, comment out the distribution function stuff below
@@ -65,17 +65,19 @@ def main():
     velocity = np.zeros(np.shape(particles))
 
     num_steps = 50
-    time_step = 1
+
+    # object timer manage current time, dynamic time steps and time log
+    timer = mytimer.Timer()
 
     for i in range(num_steps):
         #time_step = dynamicsteps.step_by_dist(particles)
-        particles,velocity= integrate(particles,velocity,density,time_step=time_step)
+        particles,velocity= integrate(particles,velocity,density, timer = timer)
         density = cic_density(particles,grid_size=grid_size)
         # enforcing toroidal boundary conditions
         particles = particles%32
         moves = append_new_array(moves,particles)
 
-    plot_particle_motion(moves, num_steps, time_step, interval = 3.2,save_gif=False,name="32_3particles_50s.gif",particle_size=10)
+    plot_particle_motion(moves, timer = timer, interval = 3.2,save_gif=True,name="32_3particles_50s.gif",particle_size=10)
     #plot_motion_from_save("test.txt",num_particles)
 
     #============================save file ========================================#

@@ -6,6 +6,8 @@ import matplotlib.pyplot as plt
 from matplotlib import animation
 import matplotlib.colors as colors
 from matplotlib.widgets import Slider
+from densities import *
+import mytimer
 
 #function to plot particles with given positions
 #used for plotting initial distribution or a positions during a timestep
@@ -42,9 +44,9 @@ def plot_particles(positions,grid_size=32,save_fig=False,particle_size=0.1):
     ax.tick_params(axis='y', pad=-5)
     ax.tick_params(axis='z', pad=-4)
 
-    ax.scatter3D(positions[..., 0], positions[..., 1], 0 , c='grey', s=particle_size)
-    ax.scatter3D(0, positions[..., 1], positions[..., 2], c='grey', s=particle_size)
-    ax.scatter3D(positions[..., 0], grid_size , positions[..., 2], c='grey', s=particle_size)
+    ax.scatter3D(positions[..., 0], positions[..., 1], 0 , c='grey', s=0.01)
+    ax.scatter3D(0, positions[..., 1], positions[..., 2], c='grey', s=0.01)
+    ax.scatter3D(positions[..., 0], grid_size , positions[..., 2], c='grey', s=0.01)
 
     if save_fig:
         plt.savefig("initial_distribution.png", dpi=1200, bbox_inches="tight")
@@ -99,7 +101,7 @@ def plot_density(density_field,grid_size=32,slider=False,save_slices=False,inter
 
 #function to plot motion of particles
 #uses a list of particle positions across all timesteps generated using the append_new_array function below
-def plot_particle_motion(particle_positions, num_steps, interval,save_gif=False,name="particles.gif",particle_size=0.1):
+def plot_particle_motion(particle_positions, timer:mytimer.Timer, interval,save_gif=False,name="particles.gif",particle_size=0.1):
     """
     Plots and shows the motion of particles over time.
 
@@ -108,8 +110,9 @@ def plot_particle_motion(particle_positions, num_steps, interval,save_gif=False,
                 It is a (total_time_steps,num_particles,3) list
                 Can be constructed using the append_new_array function
                 
-    :param num_steps:
-                Total number of timesteps in the simulation.
+    :param timer: mytimer.Timer
+                object timer manages current time, dynamic time steps and time log
+
     :param interval:
                 Interval (in milliseconds) between frames in the animation.
 
@@ -136,7 +139,7 @@ def plot_particle_motion(particle_positions, num_steps, interval,save_gif=False,
         ax.set_title("Particle Motion at t = {}".format(num))
         return ax
 
-    ani = animation.FuncAnimation(fig, update_graph, num_steps,
+    ani = animation.FuncAnimation(fig, update_graph, timer.get_step_num(),
                                              interval=interval, blit=False)
 
     if save_gif:
@@ -149,8 +152,144 @@ def plot_particle_motion(particle_positions, num_steps, interval,save_gif=False,
         plt.show()
 
 
+def plot_motion_from_save(name,num_particles,save_gif=False,fname="particles.gif",particle_size=0.1):
+    # Read the saved positions
+    loaded_moves = np.loadtxt(name)
+
+    # Calculate the correct number of timesteps
+    num_dimensions = 3  # x, y, z coordinates
+    total_elements = loaded_moves.size
+    num_timesteps = total_elements // (num_particles * num_dimensions)
+
+    # Reshape back to original shape
+    loaded_moves = loaded_moves.reshape((num_timesteps, num_particles, num_dimensions))
+
+
+    plot_particle_motion(loaded_moves, num_timesteps, interval = 3.2,save_gif=save_gif,name=fname,particle_size=particle_size)
+
+
 # function to append a new (num_particles, 3) array to the existing 3D array
 def append_new_array(existing_array, new_array):
     # reshape new array to (1, num_particles, 3)
     new_array_reshaped = new_array[np.newaxis, ...]
     return np.concatenate((existing_array, new_array_reshaped), axis=0)
+
+# function for plotting a single slice of a density field, i.e., a 2D slice of field at a position along an axis
+def plot_density_slice(density_field, time, axis='z', slice_position=16, grid_size=32, save_plot=False):
+    # initialize plot
+    fig, ax = plt.subplots()
+
+    # create plot based on indicated axis and position
+    if axis == 'z':
+        im = ax.imshow(density_field[:, :, slice_position], cmap='viridis',norm=colors.LogNorm(vmin=0.001,vmax=np.max(density_field)))
+        ax.invert_yaxis()
+
+        #colorbar/density in log scale to better visualize the spread of data
+        fig.colorbar(im,ax=ax,label='log(Density)')
+        ax.set_title("Density Field Slice (Z = " + str(slice_position) + ") at t = " + str(time))
+        #setting axes ranges
+        ax.set_xlim(0, grid_size)
+        ax.set_ylim(0, grid_size)
+        #setting axes labels
+        ax.set_xlabel("X axis")
+        ax.set_ylabel("Y axis")
+    elif axis == 'y':
+        im = ax.imshow(density_field[:, slice_position, :], cmap='viridis',norm=colors.LogNorm(vmin=0.001,vmax=np.max(density_field)))
+        ax.invert_yaxis()
+
+        #colorbar/density in log scale to better visualize the spread of data
+        fig.colorbar(im,ax=ax,label='log(Density)')
+        ax.set_title("Density Field Slice (Y = " + str(slice_position) + ") at t = " + str(time))
+        #setting axes ranges
+        ax.set_xlim(0, grid_size)
+        ax.set_ylim(0, grid_size)
+        #setting axes labels
+        ax.set_xlabel("X axis")
+        ax.set_ylabel("Z axis")
+    else:
+        im = ax.imshow(density_field[slice_position, :, :], cmap='viridis',norm=colors.LogNorm(vmin=0.001,vmax=np.max(density_field)))
+        ax.invert_yaxis()
+
+        #colorbar/density in log scale to better visualize the spread of data
+        fig.colorbar(im,ax=ax,label='log(Density)')
+        ax.set_title("Density Field Slice (X = " + str(slice_position) + ") at t = " + str(time))
+        #setting axes ranges
+        ax.set_xlim(0, grid_size)
+        ax.set_ylim(0, grid_size)
+        #setting axes labels
+        ax.set_xlabel("Y axis")
+        ax.set_ylabel("Z axis")
+    
+    # save or show
+    if save_plot:
+        plt.savefig('density_slice_' + axis + '_equals_' + str(slice_position))
+    else:
+        plt.show()
+
+# function to plot the density field at various times
+# takes array of positions at times, array of desired times to plot at, desired axis, desired slice positon
+# boolean indicated whether to save plots
+def plot_density_at_times(positions_at_times, time_steps, axis='z', slice_position=16, save=False):
+    for t in time_steps:
+        density = cic_density(positions_at_times[t],grid_size=32)
+        plot_density_slice(density, time=t, axis=axis, slice_position=slice_position, save_plot=save)
+
+# function for plotting potential vs. kinetic energy
+# takes arrays of particle positions, particle velocities, and gravitational potentials at each time step
+# takes time index to start the plot at in case you want to only plot later times
+def virial_plots(positions_at_times, velocities_at_times, potentials_at_times, start_time=0,save=False):
+    # calculate density at each time step
+    densities = []
+    for pos in positions_at_times:
+        densities.append(cic_density(pos,grid_size=32))
+    densities = np.array(densities)
+
+    # calculate potential energy at each position at each time step (particle mass = 1)
+    U_positions = densities * potentials_at_times
+    # array of total potential energy at each time step
+    U = []
+    for u in U_positions:
+        U.append(np.sum(u))
+    U = np.array(U)
+
+    # calculate kinetic energy at each time step (m=1)
+    # convert velocities to speeds
+    speeds_at_times = velocity_to_speed(velocities_at_times)
+    # array of kinetic energies for each particle at each time
+    K_particles = 0.5 * speeds_at_times**2
+    # array of total kinetic energy at each time step
+    K = []
+    for K_time in K_particles:
+        K.append(np.sum(K_time))
+    K = np.array(K)
+    
+    fit, fit_coeffs = fit_data(K[start_time:], U[start_time:], 1)
+
+    plt.plot(K[start_time:], U[start_time:], '.', label='Data')
+    plt.plot(K[start_time:], fit, 'k-', label='U = ' + str(fit_coeffs[0]) + 'K + ' + str(fit_coeffs[1]))
+    plt.title('Total Potential Energy vs Total Kinetic Energy')
+    plt.xlabel('Kinetic Energy')
+    plt.ylabel('Potential Energy')
+    plt.legend()
+    if save==True:
+        plt.savefig('gravity_virial_test.png')
+    else:
+        plt.show()
+
+# function to take magnitude of velocity for each particle
+# returns array of speeds for each particle at each time
+def velocity_to_speed(velocities_at_times):
+    speeds = []
+    for vel in velocities_at_times:
+        speeds.append(np.sqrt(np.sum(vel**2)))
+    return np.array(speeds)
+
+# function for creating linear fits
+# create fit line
+def fit_data(x, y, degree):
+    fit_coeffs = np.polyfit(x, y, deg=degree)
+    return fit_coeffs[0]*x + fit_coeffs[1], fit_coeffs
+
+    
+
+

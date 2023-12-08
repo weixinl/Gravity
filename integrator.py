@@ -5,9 +5,11 @@
 import numpy as np
 import densities
 import solver
+import mytimer
+import params
 
 # function to run one time step of the integrator
-def integrate(positions, velocities, density,time_step,grid_size=32):
+def integrate(positions, velocities, density, timer:mytimer.Timer ,grid_size=32):
     '''
     Integrates the particles' positions and velocities forward by one time step
     using the gradient of the gravitational potential and the Verlet integration method
@@ -18,8 +20,8 @@ def integrate(positions, velocities, density,time_step,grid_size=32):
                     array of velocity values (vx, vy, vz) for each particle
     :param potential: array size (32, 32, 32)
                     array of potential values at each point in 32x32x32 space
-    :param time_step: float
-                    size of whole time step
+    :param timer: mytimer.Timer
+                    object timer manages current time, dynamic time steps and time log
     :return: new_positions:
                     returns array of positions values (x, y, z) after one time step
     :return: new_velocities:
@@ -28,10 +30,14 @@ def integrate(positions, velocities, density,time_step,grid_size=32):
                     returns array of potential values
     '''
 
+
     potential = solver.solve_poisson(density)
 
     # get values of force (3 components) on each particle at the current positions
     F_current = grav_force(potential, positions)
+
+    # get current (dynamic) time step from timer 
+    time_step = timer.get_step_size(positions, params.DYNAMIC_STEP_METHOD)
 
     # calculate v(t + half step)
     v_half = velocities + 0.5*time_step*F_current
