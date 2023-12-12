@@ -80,7 +80,7 @@ def main():
         particles = particles%32
         moves = append_new_array(moves,particles)
 
-    plot_particle_motion(moves, timer = timer, interval = 3.2,save_gif=False,name="32_3particles_50s.gif",particle_size=10)
+    plot_particle_motion(moves, num_steps, interval = 3.2,save_gif=False,name="32_3particles_50s.gif",particle_size=10)
     #plot_motion_from_save("test.txt",num_particles)
 
     #============================save file ========================================#
