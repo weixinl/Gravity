@@ -101,7 +101,7 @@ def plot_density(density_field,grid_size=32,slider=False,save_slices=False,inter
 
 #function to plot motion of particles
 #uses a list of particle positions across all timesteps generated using the append_new_array function below
-def plot_particle_motion(particle_positions, timer:mytimer.Timer, interval,save_gif=False,name="particles.gif",particle_size=0.1):
+def plot_particle_motion(particle_positions, timesteps, interval,save_gif=False,name="particles.gif",particle_size=0.1):
     """
     Plots and shows the motion of particles over time.
 
@@ -139,7 +139,7 @@ def plot_particle_motion(particle_positions, timer:mytimer.Timer, interval,save_
         ax.set_title("Particle Motion at t = {}".format(num))
         return ax
 
-    ani = animation.FuncAnimation(fig, update_graph, timer.get_step_num(),
+    ani = animation.FuncAnimation(fig, update_graph, timesteps,
                                              interval=interval, blit=False)
 
     if save_gif:
