@@ -51,17 +51,13 @@ def integrate(positions, velocities, density, timer:mytimer.Timer ,grid_size=32)
     # calculate updated density with new positions
     new_density = densities.cic_density(new_positions)
 
-
     # update potential
     new_potential = solver.solve_poisson(new_density)
-
-
-
 
     # calculate new values of force from the new potential
     new_F = grav_force(new_potential, new_positions)
     # calculate v(t + step)
-    new_velocities = v_half + time_step*new_F
+    new_velocities = v_half + 0.5*time_step*new_F
 
     # return position, velocity, new_potential after a whole time step
     return new_positions, new_velocities
@@ -125,21 +121,3 @@ def grav_force(potential, positions,grid_size=32,cell_size=1):
         p_num += 1
 
     return g_p
-
-# placeholder for laplace equation solver (will come from different source file)
-#def solve_laplace(density):
-#    potential = density
-#    return potential
-
-# old stuff from grav_force
-'''
-for i in range(np.size(xpos)):
-        # Fx = dphi/dx
-        F[i][0] = dphi[0][xpos[i], ypos[i], zpos[i]]
-        # Fy = dphi/dy
-        F[i][1] = dphi[1][xpos[i], ypos[i], zpos[i]]
-        # Fz = dphi/dz
-        F[i][2] = dphi[2][xpos[i], ypos[i], zpos[i]]
-'''
-
-
