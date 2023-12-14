@@ -222,7 +222,7 @@ def plot_density_slice(density_field, time, axis='z', slice_position=16, grid_si
     
     # save or show
     if save_plot:
-        plt.savefig('density_slice_' + axis + '_equals_' + str(slice_position))
+        plt.savefig('sphere_density_slice_' + axis + '_equals_' + str(slice_position) + '_t_' + str(time))
     else:
         plt.show()
 
@@ -237,6 +237,7 @@ def plot_density_at_times(positions_at_times, time_steps, axis='z', slice_positi
 # function for plotting potential vs. kinetic energy
 # takes arrays of particle positions, particle velocities, and gravitational potentials at each time step
 # takes time index to start the plot at in case you want to only plot later times
+# returns arrays of U and K at each time step
 def virial_plots(positions_at_times, velocities_at_times, potentials_at_times, start_time=0,save=False):
     # calculate density at each time step
     densities = []
@@ -245,7 +246,8 @@ def virial_plots(positions_at_times, velocities_at_times, potentials_at_times, s
     densities = np.array(densities)
 
     # calculate potential energy at each position at each time step (particle mass = 1)
-    U_positions = densities * potentials_at_times
+    # factor of 0.5 added after a discussion with Mike
+    U_positions = 0.5 * densities * potentials_at_times
     # array of total potential energy at each time step
     U = []
     for u in U_positions:
@@ -266,7 +268,8 @@ def virial_plots(positions_at_times, velocities_at_times, potentials_at_times, s
     fit, fit_coeffs = fit_data(K[start_time:], U[start_time:], 1)
 
     plt.plot(K[start_time:], U[start_time:], '.', label='Data')
-    plt.plot(K[start_time:], fit, 'k-', label='U = ' + str(fit_coeffs[0]) + 'K + ' + str(fit_coeffs[1]))
+    #plt.plot(K[start_time:], fit, 'k-', label='U = ' + str(fit_coeffs[0]) + 'K + ' + str(fit_coeffs[1]))
+    plt.plot(K, -2*K, 'r-', label='Virial Theorem')
     plt.title('Total Potential Energy vs Total Kinetic Energy')
     plt.xlabel('Kinetic Energy')
     plt.ylabel('Potential Energy')
@@ -275,6 +278,7 @@ def virial_plots(positions_at_times, velocities_at_times, potentials_at_times, s
         plt.savefig('gravity_virial_test.png')
     else:
         plt.show()
+    return K, U
 
 # function to take magnitude of velocity for each particle
 # returns array of speeds for each particle at each time
@@ -289,6 +293,22 @@ def velocity_to_speed(velocities_at_times):
 def fit_data(x, y, degree):
     fit_coeffs = np.polyfit(x, y, deg=degree)
     return fit_coeffs[0]*x + fit_coeffs[1], fit_coeffs
+
+def virial_from_load(K, U, start_time=0, save=False):
+    plt.plot(K[start_time:], U[start_time:], '.', label='Data')
+    #plt.plot(K[start_time:], fit, 'k-', label='U = ' + str(fit_coeffs[0]) + 'K + ' + str(fit_coeffs[1]))
+    plt.plot(K, -2*K, 'r-', label='Virial Theorem')
+    plt.title('Total Potential Energy vs Total Kinetic Energy')
+    plt.xlabel('Kinetic Energy')
+    plt.ylabel('Potential Energy')
+    plt.xlim(0.4e8, 0.75e8)
+    plt.ylim(-1.5e8, -0.5e8)
+    plt.legend()
+    if save==True:
+        plt.savefig('gravity_virial_test_zoom.png')
+    else:
+        plt.show()
+    
 
     
 
