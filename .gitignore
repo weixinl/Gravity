@@ -12,3 +12,10 @@
 !main_for_virial.py
 !velocities.py
 !test_solver.py
+!outputs/elongated
+!outputs/extreme_elongated
+!outputs/flat
+!outputs/rod
+!outputs/spherical_spin
+!outputs/symmetric_gaussian
+!outputs/triaxial
