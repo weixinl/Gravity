@@ -23,3 +23,5 @@ outputs/*
 !outputs/symmetric_gaussian
 !outputs/triaxial
 !outputs/noevolve
+outputs/noevolve/*
+!outputs/noevolve/*
