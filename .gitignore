@@ -13,6 +13,8 @@
 !velocities.py
 !utils.py
 !test_solver.py
+!outputs/
+outputs/*
 !outputs/elongated
 !outputs/extreme_elongated
 !outputs/flat
