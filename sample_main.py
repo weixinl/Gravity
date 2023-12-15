@@ -134,6 +134,8 @@ def main():
 
 if __name__ == '__main__':
     # main()
-    particles, velocity = circle_no_evolution()
-    evolve(particles= particles, velocity=velocity, save_gif=True, gifname="imgs/circle_no_evolution.gif")
+    # particles, velocity = circle_no_evolution()
+    # evolve(particles= particles, velocity=velocity, save_gif=True, gifname="imgs/circle_no_evolution.gif")
+    particles, velocity = sperical_no_evolution()
+    evolve(particles= particles, velocity=velocity, save_gif=True, gifname="imgs/spherical_no_evolution.gif")
 

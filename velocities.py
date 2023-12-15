@@ -10,7 +10,7 @@ def circle_no_evolution(direction=(1, 0, 0), radius=10,center=(16,16,16),num_par
     '''
     Simplified version of Section 5 Question 4
     '''
-    vec_list, positions = distribute.distribute_circle(direction= direction, radius = radius, center=center, num_particles=20)
+    vec_list, positions = distribute.distribute_circle(direction= direction, radius = radius, center=center, num_particles=num_particles)
     plotter.plot_particles(positions, save_fig= True, title= "circle distribution", 
                            filename = "imgs/circle-distribution.png", particle_size = 10)
     G = 0.5
@@ -24,8 +24,7 @@ def circle_no_evolution(direction=(1, 0, 0), radius=10,center=(16,16,16),num_par
 
     
 
-
-def sperical_velocities_no_evolution():
+def sperical_no_evolution(radius=10,center=(16,16,16)):
     '''
     Section 5 Question 4
     For an initially spherical distribution, assign initial velocities that will lead to a nearly no evolution
@@ -33,17 +32,39 @@ def sperical_velocities_no_evolution():
     return particle positions and velocities
     '''
 
-    vec_list, positions = distribute.distribute_circle(direction= direction, radius = radius, center=center, num_particles=20)
-    plotter.plot_particles(positions, save_fig= True, title= "circle distribution", 
-                           filename = "imgs/circle-distribution.png", particle_size = 10)
-    G = 1
-    v_val = np.sqrt(G * num_particles / radius) # magnitude of speed (cosmic velocity)
-    velocities = np.zeros((num_particles, 3))
-    for i in range(num_particles):
-        v_direction = utils.normalize_array(np.cross(direction, vec_list[i]))
-        velocities[i, :] = v_direction * v_val
+    # circles_directions = np.asarray([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
+    circles_directions = np.asarray(utils.fibonacci_sphere(10))
+    circle_num = circles_directions.shape[0]
 
-    return positions, velocities
+    # particle num per circle
+    circle_particle_num = 20
+
+    num_particles = circle_num * circle_particle_num
+
+
+    G = 0.45
+    v_val = np.sqrt(G * num_particles / radius) # magnitude of speed (cosmic velocity)
+
+    positions_list = []
+    velocities_list = []
+
+    for circ_i in range(circle_num):
+
+        circ_vec_list, circ_positions = distribute.distribute_circle\
+            (direction= circles_directions[circ_i], radius = radius, center=center, num_particles=circle_particle_num)
+
+        circ_velocities = np.zeros((circle_particle_num, 3))
+        for i in range(circle_particle_num):
+            v_direction = utils.normalize_array(np.cross(circles_directions[circ_i], circ_vec_list[i]))
+            circ_velocities[i, :] = v_direction * v_val
+        
+        positions_list.append(circ_positions)
+        velocities_list.append(circ_velocities)
+
+    positions_all = np.concatenate(positions_list)
+    velocities_all = np.concatenate(velocities_list)
+
+    return positions_all, velocities_all
 
 def angular_momentum(particles,velocity,center=(16,16,16),radius=10,fraction=1,mass=1):
     average_momentum = mass * np.average(velocity)
