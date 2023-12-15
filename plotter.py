@@ -11,7 +11,8 @@ import mytimer
 
 #function to plot particles with given positions
 #used for plotting initial distribution or a positions during a timestep
-def plot_particles(positions,grid_size=32,save_fig=False,particle_size=0.1):
+def plot_particles(positions,grid_size=32,save_fig=False,particle_size=0.1, title = "Distributing particles with a Gaussian Distribution", \
+                   filename = "initial_distribution.png", dotsize = 0.01):
     # plotting particles
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
@@ -32,7 +33,7 @@ def plot_particles(positions,grid_size=32,save_fig=False,particle_size=0.1):
     ax.zaxis.label.set_size(7)
     #making axis ticks smaller
     ax.tick_params(axis='both', which='major', labelsize=5)
-    plt.title("Distributing particles with a Gaussian Distribution")
+    plt.title(title)
 
     #making the axis labels closer to the axis
     ax.xaxis.labelpad = -10
@@ -44,12 +45,12 @@ def plot_particles(positions,grid_size=32,save_fig=False,particle_size=0.1):
     ax.tick_params(axis='y', pad=-5)
     ax.tick_params(axis='z', pad=-4)
 
-    ax.scatter3D(positions[..., 0], positions[..., 1], 0 , c='grey', s=0.01)
-    ax.scatter3D(0, positions[..., 1], positions[..., 2], c='grey', s=0.01)
-    ax.scatter3D(positions[..., 0], grid_size , positions[..., 2], c='grey', s=0.01)
+    ax.scatter3D(positions[..., 0], positions[..., 1], 0 , c='grey', s= dotsize)
+    ax.scatter3D(0, positions[..., 1], positions[..., 2], c='grey', s=dotsize)
+    ax.scatter3D(positions[..., 0], grid_size , positions[..., 2], c='grey', s=dotsize)
 
     if save_fig:
-        plt.savefig("initial_distribution.png", dpi=1200, bbox_inches="tight")
+        plt.savefig(filename, dpi=1200, bbox_inches="tight")
     else:
         plt.show()
 

@@ -23,6 +23,42 @@ def load_txt(name,num_particles=32**3):
 
     return loaded_moves,num_timesteps
 
+def evolve(particles, velocity,save_gif = False, gifname = "32_3particles_50s.gif"):
+    # Generate particles and density field
+    grid_size = 32
+
+    ####---------load file---------------########
+    fname = 'test.txt'
+    # moves, current_tstep = load_txt(fname, num_particles)
+    ####------------------------------------########
+
+
+
+    #array to store all positions at each timestep
+    moves = np.array(particles)
+    #adding a new axis to store timesteps: moves[0] gives positions of all particles at t=0
+    moves = moves[np.newaxis,...]
+    num_steps = 50
+
+    # object timer manage current time, dynamic time steps and time log
+    timer = mytimer.Timer()
+
+    density = cic_density(particles,grid_size=grid_size)
+
+    for i in range(num_steps):
+        #time_step = dynamicsteps.step_by_dist(particles)
+        particles,velocity= integrate(particles,velocity,density, timer = timer)
+        density = cic_density(particles,grid_size=grid_size)
+        # enforcing toroidal boundary conditions
+        particles = particles%32
+        moves = append_new_array(moves,particles)
+
+    plot_particle_motion(moves, num_steps, interval = 3.2,save_gif=save_gif,name=gifname,particle_size=10)
+    #plot_motion_from_save("test.txt",num_particles)
+
+    #============================save file ========================================#
+    #save file name
+
 def main():
     # Generate particles and density field
     grid_size = 32
@@ -52,9 +88,11 @@ def main():
     #     particles[i] = [16,15,15]
     # particles[-1] = [14,16,16]
 
-    density = cic_density(particles,grid_size=grid_size)
+    # density = cic_density(particles,grid_size=grid_size)
     #plot_particles(particles)
     #plot_density(density,grid_size)
+
+    
 
     #array to store all positions at each timestep
     moves = np.array(particles)
@@ -62,7 +100,7 @@ def main():
     moves = moves[np.newaxis,...]
 
     #testing out with zeroes first
-    velocity = np.zeros(np.shape(particles))
+    # velocity = np.zeros(np.shape(particles))
 
     #assign angular momentum about z axis, need to specify center and radius of distribution
     velocity = angular_momentum(particles,velocity,center,radius=10)
@@ -95,5 +133,7 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    # main()
+    particles, velocity = circle_no_evolution()
+    evolve(particles= particles, velocity=velocity, save_gif=True, gifname="imgs/circle_no_evolution.gif")
 

@@ -2,6 +2,48 @@
 #assign velocities
 
 import numpy as np
+import distribute
+import plotter
+import utils
+
+def circle_no_evolution(direction=(1, 0, 0), radius=10,center=(16,16,16),num_particles = 20):
+    '''
+    Simplified version of Section 5 Question 4
+    '''
+    vec_list, positions = distribute.distribute_circle(direction= direction, radius = radius, center=center, num_particles=20)
+    plotter.plot_particles(positions, save_fig= True, title= "circle distribution", 
+                           filename = "imgs/circle-distribution.png", particle_size = 10)
+    G = 0.5
+    v_val = np.sqrt(G * num_particles / radius) # magnitude of speed (cosmic velocity)
+    velocities = np.zeros((num_particles, 3))
+    for i in range(num_particles):
+        v_direction = utils.normalize_array(np.cross(direction, vec_list[i]))
+        velocities[i, :] = v_direction * v_val
+
+    return positions, velocities
+
+    
+
+
+def sperical_velocities_no_evolution():
+    '''
+    Section 5 Question 4
+    For an initially spherical distribution, assign initial velocities that will lead to a nearly no evolution
+
+    return particle positions and velocities
+    '''
+
+    vec_list, positions = distribute.distribute_circle(direction= direction, radius = radius, center=center, num_particles=20)
+    plotter.plot_particles(positions, save_fig= True, title= "circle distribution", 
+                           filename = "imgs/circle-distribution.png", particle_size = 10)
+    G = 1
+    v_val = np.sqrt(G * num_particles / radius) # magnitude of speed (cosmic velocity)
+    velocities = np.zeros((num_particles, 3))
+    for i in range(num_particles):
+        v_direction = utils.normalize_array(np.cross(direction, vec_list[i]))
+        velocities[i, :] = v_direction * v_val
+
+    return positions, velocities
 
 def angular_momentum(particles,velocity,center=(16,16,16),radius=10,fraction=1,mass=1):
     average_momentum = mass * np.average(velocity)
@@ -54,3 +96,6 @@ def angular_momentum(particles,velocity,center=(16,16,16),radius=10,fraction=1,m
 #
 #
 #     return velocity
+
+if __name__ == "__main__":
+    circle_no_evolution()
