@@ -38,8 +38,8 @@ def test_potential_abs_error(center=(16,16,16),gridsize=32):
     ana_V[posx,posy,posz]=np.NaN
 
     error = abs(ana_V[:,:,16]-potential[:32,:32,16])
+    
     fig, ax = plt.subplots(figsize=(8,6))
-    pic = plt.imshow(ana_V[:,:,16])
     pic2 = plt.imshow(error)
     fig.colorbar(pic2)
     plt.xlabel('Distance from x=0 (m)',fontsize=16)
